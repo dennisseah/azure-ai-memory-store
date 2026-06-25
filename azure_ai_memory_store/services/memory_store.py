@@ -79,4 +79,4 @@ class MemoryStore:
                 if attempt == attempts - 1:
                     raise
                 time.sleep(2 * (attempt + 1))
-        return []
+        return []  # pragma: no cover - loop always returns or raises
