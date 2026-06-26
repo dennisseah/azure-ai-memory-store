@@ -2,6 +2,8 @@ import time
 
 from azure.ai.projects import AIProjectClient
 from azure.ai.projects.models import (
+    MemoryItem,
+    MemoryItemKind,
     MemoryStoreDefaultDefinition,
     MemoryStoreDefaultOptions,
 )
@@ -56,23 +58,39 @@ class MemoryStore:
                 description="Memory store with 30-day default TTL",
             )
 
-    def clear_memory(self, user_id: str):
+    def list_memories(
+        self, user_id: str, kind: MemoryItemKind | None = None
+    ) -> list[MemoryItem]:
         scope = f"{self.scope_prefix}_{user_id}"
-        # The preview memory-store API occasionally returns a transient 500, so
-        # materialize the page (rather than deleting while paging) and retry a
-        # few times before giving up.
-        memories = self._list_memories_with_retry(scope)
-        for memory in memories:
-            self.project_client.beta.memory_stores.delete_memory(
-                name=self.name, memory_id=memory.memory_id
-            )
+        return self._list_memories_with_retry(scope, kind=kind)
 
-    def _list_memories_with_retry(self, scope: str, attempts: int = 3):
+    def clear_memory(self, user_id: str, passes: int = 3, delay: float = 5.0) -> None:
+        scope = f"{self.scope_prefix}_{user_id}"
+        # The list/search index is eventually consistent, so a single pass may
+        # miss memories that aren't indexed yet. Re-list and delete a few times,
+        # pausing between passes to let the index catch up, until it reports empty.
+        for attempt in range(passes):
+            # The preview memory-store API occasionally returns a transient 500,
+            # so materialize the page (rather than deleting while paging) before
+            # deleting each memory.
+            memories = self._list_memories_with_retry(scope)
+            if not memories:
+                return
+            for memory in memories:
+                self.project_client.beta.memory_stores.delete_memory(
+                    name=self.name, memory_id=memory.memory_id
+                )
+            if attempt < passes - 1:
+                time.sleep(delay)
+
+    def _list_memories_with_retry(
+        self, scope: str, attempts: int = 3, kind: MemoryItemKind | None = None
+    ) -> list[MemoryItem]:
         for attempt in range(attempts):
             try:
                 return list(
                     self.project_client.beta.memory_stores.list_memories(
-                        name=self.name, scope=scope
+                        name=self.name, scope=scope, kind=kind
                     )
                 )
             except HttpResponseError:
