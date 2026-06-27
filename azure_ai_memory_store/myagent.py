@@ -15,15 +15,14 @@ class MyAgentEnv(BaseSettings):
 class MyAgent:
     def __init__(self, app_id: str):
         self.app_id = app_id
+        self.memory_store_name = f"{self.app_id}-memory-store"
+
         env = MyAgentEnv()  # type: ignore
         self.project_client = AIProjectClient(
             endpoint=env.foundry_project_endpoint,
             credential=DefaultAzureCredential(),
         )
         self.env = env
-
-    def _memory_store_name(self) -> str:
-        return f"{self.app_id}-memory-store"
 
     def chat(
         self,
@@ -38,7 +37,7 @@ class MyAgent:
             conversation_id = conversation.id
 
         tool = MemorySearchPreviewTool(
-            memory_store_name=self._memory_store_name(),
+            memory_store_name=self.memory_store_name,
             scope=user_id,
             update_delay=1,  # Wait 1 second of inactivity before updating memories
         )
