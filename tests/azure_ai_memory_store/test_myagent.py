@@ -29,7 +29,7 @@ def test_init_builds_client_with_endpoint(mocker):
 
 
 def test_memory_store_name(agent):
-    assert agent._memory_store_name() == "app-a-memory-store"
+    assert agent.memory_store_name == "app-a-memory-store"
 
 
 def test_chat_creates_conversation_when_none(agent, mock_project_client):
