@@ -1,0 +1,90 @@
+---
+title: Retrieval Model
+content:
+  - type: paragraph
+    text: >
+      The retrieval model is a critical component of the Cortex Memory Platform,
+      responsible for efficiently searching and retrieving relevant memories
+      from the Azure AI Foundry Memory Store. It leverages advanced search
+      algorithms and indexing techniques to ensure that the most pertinent
+      memories are returned in response to user queries. The retrieval model is
+      designed to handle large volumes of data while maintaining low latency and
+      high accuracy, making it suitable for real-time applications where quick
+      access to relevant information is essential. By optimizing the retrieval
+      process, the model enhances the overall user experience and supports the
+      effective management of memories within the platform.
+  - type: paragraph
+    text: >
+      Testing and evaluating the retrieval API is significantly complex, as it
+      requires a large volume of test data and a variety of scenarios to ensure
+      that the retrieval model performs well under different conditions. Whether
+      using RAG (Retrieval-Augmented Generation) or Large Language Models (LLMs)
+      to identify relevant memories, the retrieval model must be thoroughly
+      tested to ensure that it meets the performance and accuracy requirements
+      of the Cortex Memory Platform.
+  - type: paragraph
+    text: >
+      From designing the storage of memories to their retrieval mechanisms, we
+      delegate the heavy lifting to Azure AI Foundry Memory Store, which is
+      designed to handle these tasks. This lets us focus on building a retrieval
+      model that efficiently searches and retrieves relevant memories from the
+      memory store, while ensuring that the retrieval process is secure,
+      reliable, and scalable. By leveraging the capabilities of Azure AI Foundry
+      Memory Store, we can build a robust and effective retrieval model that
+      meets the needs of the Cortex team and provides a seamless user
+      experience.
+  - type: image
+    src: docs/images/memory_store.drawio.png
+    caption: Memory Store for an Agent
+    label: fig:agent_memory_store
+    width: 0.4\textwidth
+  - type: paragraph
+    text: >
+      We are proposing one memory store per application (aka "agent") to
+      simplify the retrieval model. This design choice allows us to efficiently
+      manage and retrieve memories for each application without introducing
+      unnecessary complexity. By having a dedicated memory store for each
+      application, we can ensure that the retrieval model is optimized for the
+      specific needs of that application, while also providing a clear
+      separation of concerns between different applications.
+  - type: image
+    src: docs/images/memory_stores.drawio.png
+    caption: Memory Stores
+    label: fig:agent_memory_stores
+    width: 0.8\textwidth
+  - type: paragraph
+    text: >
+      Figure \ref{fig:agent_memory_stores} illustrates the proposed design of
+      having one memory store per application. Each application has its own
+      dedicated memory store, which is responsible for storing and retrieving
+      memories specific to that application. However, there is a caveat to this
+      design choice. The agent can only retrieve memories from its own memory
+      store, and cannot access memories from other applications' memory stores.
+  - type: image
+    src: docs/images/consolidate_memory_stores.drawio.png
+    caption: Consolidated Memory Stores
+    label: fig:consolidate_memory_stores
+    width: 0.8\textwidth
+  - type: paragraph
+    text: >
+      Figure \ref{fig:consolidate_memory_stores} shows a consolidated memory
+      store design where all application memories are further consolidated into
+      a common memory store, which the MCP tools for all agents can access. This
+      design choice allows for a more centralized approach to memory management,
+      where all memories are stored in a single location.
+  - type: paragraph
+    text: >
+      A by-product of this design choice is that the MCP tool (for retrieving
+      memories) can offer the agent the following options:
+  - type: enumerate
+    items:
+      - Retrieve memories from the agent's own memory store.
+      - Retrieve memories from the consolidated memory store.
+  - type: paragraph
+    text: >
+      This design choice provides flexibility in memory retrieval, letting the
+      agent access memories from its own memory store or from the consolidated
+      memory store, depending on the requirements of the application. These
+      options ensure that the retrieval model is optimized for the needs of each
+      application while still supporting a centralized approach to memory
+      management.

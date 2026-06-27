@@ -1,0 +1,61 @@
+---
+title: Introduction
+content:
+  - type: paragraph
+    text: >
+      This paper presents a proposal to leverage Azure AI Foundry Memory Store
+      to build a memory platform that meets the requirements of the Cortex team.
+      The platform extends the capabilities of Azure AI Foundry Memory Store
+      with additional implementation to cover these requirements, while
+      alleviating its limitations in areas such as memory type classification,
+      memory quota, and retrieval mechanisms.
+  - type: paragraph
+    text: >
+      The motivation behind this proposal is to address the challenges of memory
+      management in AI systems. Effective memory management demands efficient
+      storage, retrieval, and classification of memories and, just as
+      importantly, a platform that is safe and secure while protecting user data
+      and privacy. By building on Azure AI Foundry Memory Store, we avoid
+      re-implementing a memory store from scratch and instead focus on
+      classifying and organizing different types of memories. Extending its
+      capabilities lets us deliver a more targeted and effective platform that
+      meets user needs and addresses the challenges of memory management in AI
+      systems.
+  - type: paragraph
+    text: >
+      With a security-first mindset, we design the platform to protect user data
+      and ensure compliance with relevant regulations. This includes access
+      controls, encryption, and other safeguards that keep the platform secure
+      for its users. By prioritizing security and privacy, we build a memory
+      platform that users can trust and rely on for their memory management
+      needs.
+  - type: paragraph
+    text: >
+      Safety is equally central to our design. The memory must not be easily
+      manipulated or tampered with, and the system must prevent malicious actors
+      from exploiting vulnerabilities. Memory corruption and poisoning are real
+      risks that can compromise the integrity of the platform. To mitigate them,
+      we implement robust measures such as data validation, access controls, and
+      monitoring to detect and prevent any unauthorized access or tampering. By
+      prioritizing safety throughout the design and implementation, we ensure
+      that users can trust the system to manage their memories effectively and
+      securely. The Microsoft AI Safety team brings deep experience in this
+      area, and we draw on their expertise to keep safety at the core of the
+      platform.
+  - type: paragraph
+    text: >
+      In summary, this paper proposes leveraging Azure AI Foundry Memory Store
+      to build a memory platform that classifies and stores different types of
+      memories. The platform is designed with security and privacy in mind,
+      applying appropriate measures to protect user data and ensure regulatory
+      compliance. By prioritizing safety throughout its design and
+      implementation, we ensure that users can trust the system to manage their
+      memories effectively and securely.
+  - type: paragraph
+    text: >
+      We shall first have a deeper understanding of Azure AI Foundry Memory
+      Store, its capabilities, and limitations. We then propose a memory
+      platform that extends the capabilities of Azure AI Foundry Memory Store to
+      meet the requirements of the Cortex team. Finally, we discuss the security
+      and safety measures that we have implemented to ensure that the platform
+      is secure, reliable, and trustworthy for its users.

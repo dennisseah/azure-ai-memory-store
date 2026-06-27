@@ -1,0 +1,111 @@
+---
+title: Azure Foundry AI Memory Store
+content:
+  - type: paragraph
+    text: >
+      Azure AI Foundry Memory Store is a cloud-based service for storing and
+      retrieving agent memories at scale. Built on Azure's infrastructure, it
+      provides high availability, durability, and security for the memories it
+      holds. The following sections explore its capabilities and limitations in
+      more detail.
+  - type: paragraph
+    text: >
+      The memory store needs a Large Language Model (LLM) to process and store
+      memories. The LLM analyzes user interactions, extracts relevant
+      information, and stores it in the memory store. It also retrieves memories
+      when needed to provide context for future interactions.
+  - type: paragraph
+    text: >
+      The store also needs an embedding model to create vector representations
+      of the memories. The embedding model transforms textual information into a
+      numerical format that can be efficiently stored and searched, allowing the
+      agent to quickly find memories relevant to the current conversation.
+  - type: paragraph
+    subsection: How memories are created and stored
+    text: >
+      Azure AI Foundry Memory Store supports two ways to create memories:
+      automatic and manual.
+  - type: paragraph
+    subsubsection: Automatic memory creation
+    text: >
+      When an agent is associated with a memory store, it automatically creates
+      memories from its interactions with users. The agent applies its internal
+      logic to decide what information is relevant and worth retaining. Over
+      time, this builds a knowledge base that improves the accuracy and
+      relevance of the agent's responses.
+  - type: paragraph
+    text: >
+      Automatic memory creation is driven by user interactions. After a
+      conversation ends and an inactive period follows, the agent extracts the
+      relevant information and stores it as a memory. It uses natural language
+      processing and machine learning to analyze the conversation and identify
+      what to retain.
+  - type: code
+    text: |
+      from azure.ai.projects.agents import MemorySearchPreviewTool
+
+      scope = "user_123" 
+      tool = MemorySearchPreviewTool(
+          memory_store_name=memory_store.name,
+          scope=scope,
+          update_delay=300 # Default is 300 seconds (5 minutes)
+      )
+  - type: paragraph
+    text: >
+      The `MemorySearchPreviewTool` lets the agent search the memory store for
+      relevant memories. It takes the memory store name, a `scope`, and an
+      `update_delay` as parameters. The `update_delay` sets the interval after
+      which the agent extracts and stores new memories from its interactions
+      with users.
+  - type: paragraph
+    subsubsection: Manual memory creation
+    text: >
+      Agents can also create memories manually, letting developers add memories
+      programmatically in response to specific events or conditions. For
+      example, an agent could store a memory when a user completes a task or
+      provides feedback.
+  - type: code
+    text: |
+      poller = project_client.beta.memory_stores.begin_update_memories(
+          name=store_name,
+          scope=scope,
+          items=message,
+          update_delay=0,  # Trigger update immediately without waiting
+      )
+      poller.result()  # Wait until memories are extracted and stored
+  - type: paragraph
+    text: >
+      The `begin_update_memories` method adds memories to the memory store. It
+      takes the memory store name, a `scope`, and the `items` to store as
+      parameters. Setting `update_delay` to 0 triggers an immediate update
+      without waiting for the default interval. The method is asynchronous; the
+      optional `poller.result()` call blocks until the memories are extracted
+      and stored.
+  - type: paragraph
+    subsection: Memory Storage
+    text: >
+      Azure AI Foundry Memory Store uses a shared responsibility model. Its
+      underlying state depends on highly resilient Azure services such as Azure
+      Cosmos DB and Azure AI Search. However, depending on your configuration
+      (Basic vs. Standard deployment mode), you may be responsible for managing
+      the HA/DR of these components.
+  - type: paragraph
+    text: >
+      Foundry Memory Store is strictly a text-based semantic layer designed to
+      use a chat model and embedding model to process textual knowledge. It
+      processes specific text categories: User Profile Memory (preferences,
+      facts), Session/Chat Summaries, and Procedural Memory (workflows).
+  - type: paragraph
+    text: >
+      It is not designed for large volumes of data. Microsoft documentation
+      states that Memory Store is meant for distilled, user-level context and
+      conversation summaries. For large volumes of static data or enterprise
+      knowledge bases, Microsoft recommends Foundry IQ or Azure AI Search (RAG).
+  - type: paragraph
+    text: >
+      The memory entries in the store are indexed by `scope`, a unique
+      identifier for the agent or user. The `scope` can be any arbitrary string
+      that uniquely identifies the context of the memories, allowing the agent
+      to retrieve relevant memories for the current conversation. It can be set
+      to a user ID, a session ID, or any other identifier that makes sense for
+      the application.

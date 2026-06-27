@@ -1,5 +1,15 @@
 version: "3"
 tasks:
+  doc:pdf:
+    desc: "Generates the LaTeX paper PDF"
+    cmds:
+      - uv run python -m docs.tex.generate
+
+  doc:markdown:
+    desc: "Generates the paper as a Markdown file"
+    cmds:
+      - uv run python -m docs.tex.generate --format markdown
+
   util:format-code:
     desc: "Formats the code using ruff"
     cmds:

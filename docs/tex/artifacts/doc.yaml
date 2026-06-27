@@ -1,0 +1,95 @@
+---
+title: Memory Platform with Azure AI Memory Store
+author:
+  - Dennis Seah|dennis.seah
+  - Barbara Stortz|bastortz
+  - Harsha Vardhan Annapureddy|hannapureddy
+affiliation: Microsoft Corporation
+email_domain: microsoft.com
+output_file: paper
+
+revision_history:
+  - version: "0.9.0"
+    date: "2026-06-26"
+    description:
+      - "Initial draft."
+  - version: "0.9.1"
+    date: "2026-06-27"
+    description:
+      - "Incorporate feedback from Harsha."
+
+geometry_options:
+  top: "1.2in"
+  bottom: "1.2in"
+  left: "1.2in"
+  right: "1.2in"
+
+preamble:
+  # Make section, subsection, and subsubsection titles not bold
+  - '\usepackage{titlesec}'
+  - '\titleformat{\section}{\normalfont\Large}{\thesection}{1em}{}'
+  - '\titleformat{\subsection}{\normalfont\large}{\thesubsection}{1em}{}'
+  - '\titleformat{\subsubsection}{\normalfont\normalsize}{\thesubsubsection}{1em}{}'
+  # Make abstract title italic, not bold
+  - '\usepackage{abstract}'
+  - '\renewcommand{\abstractnamefont}{\normalfont\itshape}'
+  # For itemize spacing control
+  - '\usepackage{enumitem}'
+  # For including images
+  - '\usepackage{graphicx}'
+  # For exact figure placement [H]
+  - '\usepackage{float}'
+  # For caption styling (italic and small)
+  - '\usepackage{caption}'
+  - '\captionsetup{font={it,small}}'
+  # For headers and footers
+  - '\usepackage{fancyhdr}'
+  - '\pagestyle{fancy}'
+  - '\fancyhf{}'
+  - '\fancyhead[R]{\textit{\thepage}}'
+  - '\fancyfoot[C]{\small \textit{Private \& Confidential}}'
+  - '\renewcommand{\headrulewidth}{0.4pt}'
+  # For URLs in references
+  - '\usepackage{url}'
+  - '\usepackage{hyperref}'
+  - '\hypersetup{colorlinks=true,linkcolor=black,urlcolor=black,citecolor=blue}'
+  # Make TOC entries not bold
+  - '\usepackage{tocloft}'
+  - '\renewcommand{\cftsecfont}{\normalfont}'
+  - '\renewcommand{\cftsecpagefont}{\normalfont}'
+  - '\renewcommand{\cfttoctitlefont}{\normalfont\Large}'
+  # Left-align title and references (combined makeatletter block)
+  - '\makeatletter'
+  - '\renewcommand{\refname}{\raggedright\normalfont References}'
+  - '\renewenvironment{thebibliography}[1]{\section*{\refname}\list{\@biblabel{\@arabic\c@enumiv}}{\settowidth\labelwidth{\@biblabel{#1}}\leftmargin\labelwidth\advance\leftmargin\labelsep\@openbib@code\usecounter{enumiv}\let\p@enumiv\@empty\renewcommand\theenumiv{\@arabic\c@enumiv}}\raggedright\sloppy\sfcode`\.\@m}{\def\@noitemerr{\@latex@warning{Empty
+    `thebibliography` environment}}\endlist}'
+  - '\makeatother'
+  # Remove paragraph indentation
+  - '\setlength{\parindent}{0pt}'
+
+content:
+  - introduction.yaml
+  - azure_ai_memory_store.yaml
+  - architecture.yaml
+  - retreival_model.yaml
+
+abstract: >
+  This paper presents a proposal to leverage Azure AI Foundry Memory Store to
+  build a memory platform that meets the requirements of the Cortex team. The
+  platform extends the capabilities of Azure AI Foundry Memory Store with
+  additional implementation while alleviating its limitations in areas such as
+  memory type classification, memory quota, and retrieval mechanisms. By
+  building on the existing memory store rather than re-implementing one from
+  scratch, we deliver a more targeted and effective platform for managing and
+  retrieving different types of memories. We propose a Kubernetes-based
+  architecture in which a sidecar pod transparently captures conversations and
+  delegates memory processing and storage to the underlying memory store, and a
+  retrieval model that pairs a dedicated memory store per application with an
+  optional consolidated store, giving agents flexible access to their own and
+  shared memories through MCP tools. Security and privacy are first-class
+  concerns: the platform incorporates access controls, encryption, and
+  compliance measures to protect user data. With safety in mind, we also address
+  risks such as memory corruption and poisoning through data validation, access
+  controls, and monitoring to prevent unauthorized access or tampering. The
+  result is a memory platform that users can trust to manage their memories
+  effectively, securely, and safely.

@@ -1,0 +1,60 @@
+---
+title: Architecture for Cortex Memory Platform
+content:
+  - type: paragraph
+    text: >
+      This section presents the architecture of the Cortex Memory Platform,
+      which is built on top of Azure AI Foundry Memory Store. The design
+      addresses the requirements of the Cortex team while leveraging the
+      capabilities of the underlying memory store. We describe the key
+      components, their interactions, and how they work together to provide a
+      robust and scalable memory platform.
+  - type: image
+    src: docs/images/architecture.drawio.png
+    caption: Architecture Diagram for Cortex Memory Platform
+    label: fig:architecture
+    width: 0.8\textwidth
+  - type: paragraph
+    text: >
+      Figure \ref{fig:architecture} illustrates the architecture of the Cortex
+      Memory Platform, which is modular, scalable, and secure. It consists of
+      several key components that work together to provide a seamless memory
+      management experience for users. Each component is responsible for
+      specific tasks, and their interactions ensure that memories are created,
+      stored, retrieved, and managed effectively. The blue boxes represent the
+      components that are part of the Azure AI Foundry Memory Store, while the
+      red boxes represent the additional components that we have implemented to
+      extend its capabilities and meet the requirements of the Cortex team.
+  - type: enumerate
+    items:
+      - Each Kubernetes namespace has an Azure AI Foundry Service, a Large
+        Language Model (LLM) deployment, and an embedding model deployment. The
+        LLM and embedding model deployments are required by the Azure AI Foundry
+        Memory Store to function, and their endpoints and secrets are configured
+        in the Kubernetes namespace. The choice of LLM matters here. Extensive
+        testing and evaluation are needed to determine the best model for
+        processing and updating memory. We typically recommend OpenAI's
+        reasoning models.
+      - In order to capture all conversations between the user and the agent, we
+        propose a Kubernetes sidecar pod that acts as a proxy to the agent. The
+        sidecar pod captures every conversation and forwards it to the memory
+        store for processing and storage, ensuring that all conversations are
+        persisted in a timely manner. This is the least intrusive way to capture
+        conversations between the user and the agent, as it requires no changes
+        to the agent itself. The sidecar pod can be configured to capture all
+        conversations or only specific ones, based on the requirements of the
+        Cortex team. Once the chat messages are captured and sent to the memory
+        store, we delegate the processing and storage of memories to the memory
+        store itself. The memory store uses the LLM and embedding model to
+        analyze the conversations, extract relevant information, and store it in
+        a structured format for easy retrieval. This frees us from having to
+        implement our own memory store, which is a complex and time-consuming
+        task. By leveraging the capabilities of Azure AI Foundry Memory Store,
+        we can focus on building a robust and scalable memory platform that
+        meets the requirements of the Cortex team.
+      - Once the memories are managed by the Azure AI Foundry Memory Store, we
+        can implement a retrieval mechanism that lets the agent access relevant
+        memories when needed. This is provided by the `MemorySearchPreviewTool`,
+        which searches the memory store for relevant memories based on the
+        current conversation context. We shall discuss the retrieval mechanism
+        in more detail in the next section.

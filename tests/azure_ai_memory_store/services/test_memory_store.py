@@ -18,12 +18,11 @@ def mock_project_client(mocker):
 
 
 def test_init_uses_existing_store(mock_project_client):
-    store = MemoryStore()
+    store = MemoryStore("app-a")
 
-    assert store.name == "tenant-a-app-a-memory-store"
-    assert store.scope_prefix == "tenant-a_app-a"
+    assert store.name == "app-a-memory-store"
     mock_project_client.beta.memory_stores.get.assert_called_once_with(
-        name="tenant-a-app-a-memory-store"
+        name="app-a-memory-store"
     )
     mock_project_client.beta.memory_stores.create.assert_not_called()
 
@@ -33,12 +32,27 @@ def test_init_creates_store_when_missing(mock_project_client):
         "missing"
     )
 
-    MemoryStore()
+    MemoryStore("app-a")
 
     mock_project_client.beta.memory_stores.create.assert_called_once()
     kwargs = mock_project_client.beta.memory_stores.create.call_args.kwargs
-    assert kwargs["name"] == "tenant-a-app-a-memory-store"
+    assert kwargs["name"] == "app-a-memory-store"
     assert kwargs["description"] == "Memory store with 30-day default TTL"
+
+
+def test_remember_updates_memories_immediately(mock_project_client):
+    poller = mock_project_client.beta.memory_stores.begin_update_memories.return_value
+
+    store = MemoryStore("app-a")
+    store.remember("john_doe", "I like tea")
+
+    mock_project_client.beta.memory_stores.begin_update_memories.assert_called_once_with(
+        name="app-a-memory-store",
+        scope="john_doe",
+        items="I like tea",
+        update_delay=0,
+    )
+    poller.result.assert_called_once_with()
 
 
 def test_clear_memory_deletes_each_memory(mock_project_client, mocker):
@@ -51,18 +65,18 @@ def test_clear_memory_deletes_each_memory(mock_project_client, mocker):
     ]
     sleep = mocker.patch.object(memory_store_module.time, "sleep")
 
-    store = MemoryStore()
-    store.clear_memory("john_doe")
+    store = MemoryStore("app-a")
+    store.clear_memory(["john_doe"])
 
     mock_project_client.beta.memory_stores.list_memories.assert_any_call(
-        name="tenant-a-app-a-memory-store", scope="tenant-a_app-a_john_doe", kind=None
+        name="app-a-memory-store", scope="john_doe", kind=None
     )
     assert mock_project_client.beta.memory_stores.delete_memory.call_count == 2
     mock_project_client.beta.memory_stores.delete_memory.assert_any_call(
-        name="tenant-a-app-a-memory-store", memory_id="m1"
+        name="app-a-memory-store", memory_id="m1"
     )
     mock_project_client.beta.memory_stores.delete_memory.assert_any_call(
-        name="tenant-a-app-a-memory-store", memory_id="m2"
+        name="app-a-memory-store", memory_id="m2"
     )
     sleep.assert_called_once_with(5.0)
 
@@ -72,8 +86,8 @@ def test_clear_memory_stops_after_passes_when_not_empty(mock_project_client, moc
     mock_project_client.beta.memory_stores.list_memories.return_value = [m1]
     sleep = mocker.patch.object(memory_store_module.time, "sleep")
 
-    store = MemoryStore()
-    store.clear_memory("john_doe", passes=2)
+    store = MemoryStore("app-a")
+    store.clear_memory(["john_doe"], passes=2)
 
     assert mock_project_client.beta.memory_stores.list_memories.call_count == 2
     assert mock_project_client.beta.memory_stores.delete_memory.call_count == 2
@@ -85,12 +99,12 @@ def test_list_memories_returns_memories_for_user(mock_project_client, mocker):
     m2 = mocker.MagicMock(memory_id="m2")
     mock_project_client.beta.memory_stores.list_memories.return_value = [m1, m2]
 
-    store = MemoryStore()
+    store = MemoryStore("app-a")
     memories = store.list_memories("john_doe")
 
     assert memories == [m1, m2]
     mock_project_client.beta.memory_stores.list_memories.assert_called_once_with(
-        name="tenant-a-app-a-memory-store", scope="tenant-a_app-a_john_doe", kind=None
+        name="app-a-memory-store", scope="john_doe", kind=None
     )
 
 
@@ -102,7 +116,7 @@ def test_list_memories_retries_then_succeeds(mock_project_client, mocker):
         [m1],
     ]
 
-    store = MemoryStore()
+    store = MemoryStore("app-a")
     result = store.list_memories("john_doe")
 
     assert result == [m1]
@@ -116,7 +130,7 @@ def test_list_memories_raises_after_exhausting_retries(mock_project_client, mock
         HttpResponseError("boom")
     )
 
-    store = MemoryStore()
+    store = MemoryStore("app-a")
     with pytest.raises(HttpResponseError):
         store.list_memories("john_doe")
 

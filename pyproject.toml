@@ -15,12 +15,15 @@ dependencies = [
 dev = [
     "pip-audit>=2.10.1",
     "pre-commit>=4.6.0",
+    "pylatex>=1.4.2",
     "pyright>=1.1.411",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "pytest-cov>=7.1.0",
     "pytest-mock>=3.15.1",
+    "pyyaml>=6.0.3",
     "ruff>=0.15.19",
+    "types-pyyaml>=6.0.12.20260518",
 ]
 
 [tool.ruff]
@@ -37,6 +40,10 @@ docstring-code-format = true
 venvPath = "."
 venv = ".venv"
 exclude = ["typings", ".venv", ".vscode", ".git", "**/node_modules", "**/__pycache__", "**/.*"]
+
+[[tool.mypy.overrides]]
+module = ["pylatex.*"]
+ignore_missing_imports = true
 
 [tool.coverage.report]
 fail_under = 90
